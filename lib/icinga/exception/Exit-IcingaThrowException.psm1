@@ -7,6 +7,7 @@ function Exit-IcingaThrowException()
         [string]$ExceptionThrown,
         [ValidateSet('Permission', 'Input', 'Configuration', 'Connection', 'Unhandled', 'Custom')]
         [string]$ExceptionType    = 'Unhandled',
+        [string]$KnowledgeBaseId,
         [switch]$Force
     );
 
@@ -67,14 +68,19 @@ function Exit-IcingaThrowException()
         );
     }
 
-    $OutputMessage = '{0}: Icinga {5} Error was thrown: {3}: {4}{1}{1}{2}';
+    if ([string]::IsNullOrEmpty($KnowledgeBaseId) -eq $FALSE) {
+        $KnowledgeBaseId = [string]::Format('[{0}]: ', $KnowledgeBaseId);
+    }
+
+    $OutputMessage = '{0}: {1}Icinga {6} Error was thrown: {4}: {5}{2}{2}{3}';
     if ([string]::IsNullOrEmpty($CustomMessage) -eq $TRUE) {
-        $OutputMessage = '{0}: Icinga {5} Error was thrown: {3}{1}{1}{2}{4}';
+        $OutputMessage = '{0}: {1}Icinga {6} Error was thrown: {4}{2}{2}{3}{5}';
     }
 
     $OutputMessage = [string]::Format(
         $OutputMessage,
         $IcingaEnums.IcingaExitCodeText.($IcingaEnums.IcingaExitCode.Unknown),
+        $KnowledgeBaseId,
         "`r`n",
         $ExceptionThrown,
         $ExceptionName,
